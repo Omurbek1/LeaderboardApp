@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, Text, FlatList, StyleSheet, Alert} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, Text, FlatList, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux';
 import {User} from '../types/User';
 
@@ -19,15 +19,10 @@ const UserList = () => {
     (user: User) => user.name === searchedUser,
   );
 
-  if (searchedUser && userIndex === -1) {
-    Alert.alert(
-      'This user name does not exist! Please specify an existing user name!',
-    );
-  }
-
   if (searchedUser && userIndex > 9) {
     topResults[9] = sortedResults[userIndex];
   }
+  useEffect(() => {}, [searchResults]);
 
   return (
     <FlatList
