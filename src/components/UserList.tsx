@@ -2,36 +2,36 @@ import React from 'react';
 import {View, Text, FlatList, StyleSheet, Alert} from 'react-native';
 import {useSelector} from 'react-redux';
 import {User} from '../types/User';
+
 const UserList = () => {
-  const users = useSelector((state: any) => state.user.users);
+  const searchResults = useSelector((state: any) => state.user.searchResults);
   const searchedUser = useSelector((state: any) => state.user.searchedUser);
 
-  const usersArray = Object.values(users) as User[];
+  // Sort the search results by bananas
+  const sortedResults =
+    searchResults && searchResults.length > 0
+      ? [...searchResults].sort((a: User, b: User) => b.bananas - a.bananas)
+      : [];
 
-  // Sort the users array
-  const sortedUsers = usersArray.sort(
-    (a: any, b: any) => b.bananas - a.bananas,
+  // Get top 10 or include searched user if not in top 10
+  const topResults = sortedResults.slice(0, 10);
+  const userIndex = sortedResults.findIndex(
+    (user: User) => user.name === searchedUser,
   );
 
-  const topUsers = sortedUsers.slice(0, 10);
-  const userIndex = sortedUsers.findIndex(
-    (user: any) => user.name === searchedUser,
-  );
-
-  console.log(searchedUser, userIndex);
-  if (userIndex === -1 && searchedUser) {
+  if (searchedUser && userIndex === -1) {
     Alert.alert(
       'This user name does not exist! Please specify an existing user name!',
     );
   }
 
-  if (userIndex > 9) {
-    topUsers[9] = sortedUsers[userIndex];
+  if (searchedUser && userIndex > 9) {
+    topResults[9] = sortedResults[userIndex];
   }
 
   return (
     <FlatList
-      data={sortedUsers}
+      data={sortedResults}
       style={styles.container}
       keyExtractor={(item: User) => item.uid}
       renderItem={({item, index}) => (

@@ -1,14 +1,26 @@
 import React, {useState} from 'react';
 import {View, TextInput, Button, StyleSheet} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {setSearchedUser} from '../redux/actions';
+import {useDispatch, useSelector} from 'react-redux';
+import {setSearchedUser, setSearchResults} from '../redux/actions';
+import Fuse from 'fuse.js';
 
 const SearchBar = () => {
   const [username, setUsername] = useState('');
   const dispatch = useDispatch();
+  const users = useSelector((state: any) => state.user.users);
 
   const handleSearch = () => {
     dispatch(setSearchedUser(username));
+
+    const fuse = new Fuse(users, {
+      keys: ['name'],
+      threshold: 0.3, // Adjust this to change fuzziness
+    });
+
+    const results = username
+      ? fuse.search(username).map(result => result.item)
+      : users;
+    dispatch(setSearchResults(results));
   };
 
   return (
@@ -30,7 +42,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 50,
-    padding: 10,
   },
   input: {
     borderColor: '#000',

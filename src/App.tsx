@@ -6,12 +6,13 @@ import {loadUsers} from './utils/dataLoader';
 import SearchBar from './components/SearchBar';
 import UserList from './components/UserList';
 import {SafeAreaView, StyleSheet} from 'react-native';
+import {User} from './types/User';
 
 const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const users = loadUsers();
+    const users: User[] = loadUsers();
     dispatch(setUsers(users));
   }, [dispatch]);
 
